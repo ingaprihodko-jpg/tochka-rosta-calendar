@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Точка Роста — Экспресс-консультация</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 20px;
+    line-height: 1;
+    background: #fff;
+    color: #222;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  .cal-header {
+    background: #7B2FBE;
+    padding: 36px 40px 32px;
+    text-align: center;
+    border-bottom: 3px solid #7B2FBE;
+  }
+  .cal-title {
+    font-size: 36px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+  }
+  .cal-subtitle {
+    font-size: 18px;
+    font-weight: 500;
+    color: #e8d5f7;
+    margin-bottom: 6px;
+  }
+  .cal-date {
+    font-size: 17px;
+    font-weight: 400;
+    color: #d4b8f0;
+    margin-bottom: 18px;
+  }
+  .cal-cta {
+    font-size: 17px;
+    font-weight: 500;
+    color: #fff;
+    margin-top: 8px;
+  }
+
+  /* ── SLOTS ── */
+  .slots-section { padding: 32px 40px 40px; }
+
+  .slots-day-label {
+    font-size: 18px;
+    font-weight: 600;
+    color: #7B2FBE;
+    margin-bottom: 18px;
+    border-bottom: 2px solid #7B2FBE;
+    padding-bottom: 8px;
+    display: inline-block;
+  }
+
+  .slots-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 14px;
+  }
+
+  .slot-card {
+    border: 2px solid #7B2FBE;
+    border-radius: 12px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 18px;
+    font-weight: 500;
+    cursor: default;
+    transition: transform 0.18s ease;
+    user-select: none;
+  }
+  .slot-card.free {
+    background: #b3e5fc;
+    color: #1a237e;
+    cursor: pointer;
+  }
+  .slot-card.free:hover { transform: scale(1.045); }
+  .slot-card.taken { background: #fff; color: #888; }
+  .slot-card.taken:hover .lock-icon { color: #c0144c; }
+
+  .slot-time { font-size: 18px; font-weight: 600; }
+  .lock-icon { font-size: 22px; transition: color 0.15s; }
+  .slot-card.free .lock-icon { color: #1976d2; }
+  .slot-card.taken .lock-icon { color: #bbb; }
+
+  /* ── OVERLAY ── */
+  .overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(60, 20, 90, 0.45);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+  }
+  .overlay.active { display: flex; }
+
+  /* ── MODAL ── */
+  .modal {
+    background: #fff;
+    border: 3px solid #7B2FBE;
+    border-radius: 16px;
+    padding: 36px 36px 28px;
+    width: 440px;
+    max-width: 96vw;
+    position: relative;
+    font-family: 'Montserrat', sans-serif;
+  }
+  .modal-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #7B2FBE;
+    margin-bottom: 6px;
+  }
+  .modal-slot-time {
+    font-size: 16px;
+    color: #555;
+    margin-bottom: 24px;
+    font-weight: 500;
+  }
+  .modal label {
+    display: block;
+    font-size: 16px;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 6px;
+    margin-top: 16px;
+  }
+  .modal input[type="text"] {
+    width: 100%;
+    border: 1.5px solid #7B2FBE;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 17px;
+    font-family: 'Montserrat', sans-serif;
+    outline: none;
+    color: #222;
+    background: #fff;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .modal input[type="text"]:focus { border-color: #c0144c; }
+
+  .consent-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-top: 20px;
+    margin-bottom: 24px;
+  }
+  .consent-box {
+    width: 22px;
+    height: 22px;
+    min-width: 22px;
+    border: 2px solid #7B2FBE;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1px;
+    background: #fff;
+    transition: background 0.15s;
+  }
+  .consent-box.checked { background: #7B2FBE; }
+  .consent-box .check-mark { display: none; color: #fff; font-size: 15px; font-weight: 700; }
+  .consent-box.checked .check-mark { display: block; }
+  .consent-text { font-size: 14px; color: #444; line-height: 1.45; }
+
+  .btn-submit {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    border-radius: 10px;
+    border: none;
+    font-size: 18px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+    transition: background 0.2s, color 0.2s;
+    background: #f4b8cc;
+    color: #9e5070;
+    cursor: not-allowed;
+  }
+  .btn-submit.active {
+    background: #c0144c;
+    color: #fff;
+    cursor: pointer;
+  }
+  .btn-submit.active:hover { background: #a00f3e; }
+
+  .modal-close {
+    position: absolute;
+    top: 14px;
+    right: 18px;
+    font-size: 26px;
+    color: #7B2FBE;
+    cursor: pointer;
+    line-height: 1;
+    font-weight: 700;
+    background: none;
+    border: none;
+  }
+  .modal-close:hover { color: #c0144c; }
+
+  /* ── SUCCESS ── */
+  .success-msg { display: none; text-align: center; padding: 16px 0 4px; }
+  .success-msg .s-icon { font-size: 52px; color: #7B2FBE; margin-bottom: 14px; }
+  .success-msg p { font-size: 18px; color: #333; font-weight: 500; line-height: 1.5; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 600px) {
+    .cal-header { padding: 28px 20px 24px; }
+    .cal-title { font-size: 26px; }
+    .slots-section { padding: 24px 16px 32px; }
+    .slots-grid { grid-template-columns: 1fr; }
+    .modal { padding: 28px 20px 22px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cal-header">
+  <div class="cal-title">ТОЧКА РОСТА</div>
+  <div class="cal-subtitle">экспресс-консультация с Ольгой Грищенко</div>
+  <div class="cal-date">15 июня, с 16:00 мск до 18:00 мск</div>
+  <div class="cal-cta">Выберите свободный слот и запишитесь на встречу:</div>
+</div>
+
+<div class="slots-section">
+  <div class="slots-day-label">15 июня</div>
+  <div class="slots-grid" id="slotsGrid"></div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <button class="modal-close" id="modalClose" aria-label="Закрыть">×</button>
+    <div id="formArea">
+      <div class="modal-title">Запись на консультацию</div>
+      <div class="modal-slot-time" id="modalSlotTime"></div>
+
+      <label for="fieldName">Имя и фамилия</label>
+      <input type="text" id="fieldName" placeholder="Введите имя и фамилию" autocomplete="off" />
+
+      <label for="fieldContact">Номер телефона или ссылка на Telegram</label>
+      <input type="text" id="fieldContact" placeholder="+7... или @username" autocomplete="off" />
+
+      <div class="consent-row">
+        <div class="consent-box" id="consentBox" role="checkbox" aria-checked="false" tabindex="0">
+          <span class="check-mark">✓</span>
+        </div>
+        <div class="consent-text">Я даю согласие на обработку персональных данных</div>
+      </div>
+
+      <button id="btnSubmit" class="btn-submit">Записаться</button>
+    </div>
+    <div class="success-msg" id="successMsg">
+      <div class="s-icon"><i class="ti ti-circle-check"></i></div>
+      <p>Вы записаны!<br>Ждём вас на консультации.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  const SLOTS = [
+    { time: '16:00\u00a0мск\u00a0–\u00a016:15\u00a0мск', id: 's0' },
+    { time: '16:15\u00a0мск\u00a0–\u00a016:30\u00a0мск', id: 's1' },
+    { time: '16:30\u00a0мск\u00a0–\u00a016:45\u00a0мск', id: 's2' },
+    { time: '16:45\u00a0мск\u00a0–\u00a017:00\u00a0мск', id: 's3' },
+    { time: '17:00\u00a0мск\u00a0–\u00a017:15\u00a0мск', id: 's4' },
+    { time: '17:15\u00a0мск\u00a0–\u00a017:30\u00a0мск', id: 's5' },
+    { time: '17:30\u00a0мск\u00a0–\u00a017:45\u00a0мск', id: 's6' },
+    { time: '17:45\u00a0мск\u00a0–\u00a018:00\u00a0мск', id: 's7' },
+  ];
+
+  // Хранилище — localStorage (для автономного HTML-файла)
+  let takenSlots = {};
+  try {
+    const saved = localStorage.getItem('tochka_rosta_slots');
+    if (saved) takenSlots = JSON.parse(saved);
+  } catch(e) {}
+
+  let currentSlotId = null;
+  let consentChecked = false;
+
+  function saveSlots() {
+    try { localStorage.setItem('tochka_rosta_slots', JSON.stringify(takenSlots)); } catch(e) {}
+  }
+
+  function renderSlots() {
+    const grid = document.getElementById('slotsGrid');
+    grid.innerHTML = '';
+    SLOTS.forEach(slot => {
+      const taken = !!takenSlots[slot.id];
+      const card = document.createElement('div');
+      card.className = 'slot-card ' + (taken ? 'taken' : 'free');
+      card.innerHTML =
+        `<span class="slot-time">${slot.time}</span>` +
+        `<i class="ti ${taken ? 'ti-lock' : 'ti-lock-open'} lock-icon" aria-hidden="true"></i>`;
+      if (!taken) card.addEventListener('click', () => openModal(slot));
+      grid.appendChild(card);
+    });
+  }
+
+  function openModal(slot) {
+    currentSlotId = slot.id;
+    document.getElementById('modalSlotTime').textContent = slot.time.replace(/\u00a0/g, ' ');
+    document.getElementById('fieldName').value = '';
+    document.getElementById('fieldContact').value = '';
+    consentChecked = false;
+    const box = document.getElementById('consentBox');
+    box.classList.remove('checked');
+    box.setAttribute('aria-checked', 'false');
+    updateBtn();
+    document.getElementById('formArea').style.display = '';
+    document.getElementById('successMsg').style.display = 'none';
+    document.getElementById('overlay').classList.add('active');
+  }
+
+  document.getElementById('modalClose').addEventListener('click', () => {
+    document.getElementById('overlay').classList.remove('active');
+  });
+  document.getElementById('overlay').addEventListener('click', e => {
+    if (e.target === document.getElementById('overlay'))
+      document.getElementById('overlay').classList.remove('active');
+  });
+
+  document.getElementById('consentBox').addEventListener('click', () => {
+    consentChecked = !consentChecked;
+    const box = document.getElementById('consentBox');
+    box.classList.toggle('checked', consentChecked);
+    box.setAttribute('aria-checked', String(consentChecked));
+    updateBtn();
+  });
+
+  document.getElementById('fieldName').addEventListener('input', updateBtn);
+  document.getElementById('fieldContact').addEventListener('input', updateBtn);
+
+  function updateBtn() {
+    const name = document.getElementById('fieldName').value.trim();
+    const contact = document.getElementById('fieldContact').value.trim();
+    const btn = document.getElementById('btnSubmit');
+    const ok = name.length > 0 && contact.length > 0 && consentChecked;
+    btn.classList.toggle('active', ok);
+    btn.style.background = ok ? '#c0144c' : '#f4b8cc';
+    btn.style.color = ok ? '#fff' : '#9e5070';
+    btn.style.cursor = ok ? 'pointer' : 'not-allowed';
+  }
+
+  document.getElementById('btnSubmit').addEventListener('click', () => {
+    const name = document.getElementById('fieldName').value.trim();
+    const contact = document.getElementById('fieldContact').value.trim();
+    if (!name || !contact || !consentChecked) return;
+
+    const slot = SLOTS.find(s => s.id === currentSlotId);
+    takenSlots[currentSlotId] = { name, contact, time: slot.time.replace(/\u00a0/g, ' ') };
+    saveSlots();
+    sendTelegram(name, contact, slot.time.replace(/\u00a0/g, ' '));
+
+    document.getElementById('formArea').style.display = 'none';
+    document.getElementById('successMsg').style.display = 'block';
+  
+  const TG_TOKEN = '8944362004:AAFmcsO5W3XtZtxWfsGHD1MO3QcLKbhO6zE';
+  const TG_CHAT  = '329728752';
+
+  function sendTelegram(name, contact, time) {
+    const text =
+      '\u{1F4C5} *Новая запись на консультацию*\n\n' +
+      '\u{1F464} Имя: ' + name + '\n' +
+      '\u{1F4DE} Контакт: ' + contact + '\n' +
+      '\u{1F4C6} Дата: 15 июня\n' +
+      '\u23F0 Время: ' + time;
+    fetch('https://api.telegram.org/bot' + TG_TOKEN + '/sendMessage', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: TG_CHAT, text: text, parse_mode: 'Markdown' })
+    }).catch(() => {});
+  }
+
+  renderSlots();
+
+    setTimeout(() => {
+      document.getElementById('overlay').classList.remove('active');
+    }, 2200);
+  });
+
+
+  const TG_TOKEN = '8944362004:AAFmcsO5W3XtZtxWfsGHD1MO3QcLKbhO6zE';
+  const TG_CHAT  = '329728752';
+
+  function sendTelegram(name, contact, time) {
+    const text =
+      '\u{1F4C5} *Новая запись на консультацию*\n\n' +
+      '\u{1F464} Имя: ' + name + '\n' +
+      '\u{1F4DE} Контакт: ' + contact + '\n' +
+      '\u{1F4C6} Дата: 15 июня\n' +
+      '\u23F0 Время: ' + time;
+    fetch('https://api.telegram.org/bot' + TG_TOKEN + '/sendMessage', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: TG_CHAT, text: text, parse_mode: 'Markdown' })
+    }).catch(() => {});
+  }
+
+  renderSlots();
+</script>
+</body>
+</html>
