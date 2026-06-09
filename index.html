@@ -369,7 +369,8 @@
     btn.style.cursor = ok ? 'pointer' : 'not-allowed';
   }
 
-  document.getElementById('btnSubmit').addEventListener('click', () => {
+  document.getElementById('btnSubmit').addEventListener('click', (e) => {
+    e.stopPropagation();
     const name = document.getElementById('fieldName').value.trim();
     const contact = document.getElementById('fieldContact').value.trim();
     if (!name || !contact || !consentChecked) return;
@@ -377,9 +378,12 @@
     takenSlots[currentSlotId] = { name, contact };
     saveSlots();
     sendTelegram(name, contact, slot.time);
+    renderSlots();
     document.getElementById('formArea').style.display = 'none';
     document.getElementById('successMsg').style.display = 'block';
-    renderSlots();
+    setTimeout(() => {
+      document.getElementById('overlay').classList.remove('active');
+    }, 3000);
   });
 
   renderSlots();
