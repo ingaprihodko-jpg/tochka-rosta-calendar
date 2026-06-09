@@ -381,6 +381,8 @@
   const TG_TOKEN = '8944362004:AAFmcsO5W3XtZtxWfsGHD1MO3QcLKbhO6zE';
   const TG_CHAT  = '261652933';
 
+  const TG_CHATS = ['261652933', '329728752'];
+
   function sendTelegram(name, contact, time) {
     const text =
       '\u{1F4C5} *Новая запись на консультацию*\n\n' +
@@ -388,11 +390,13 @@
       '\u{1F4DE} Контакт: ' + contact + '\n' +
       '\u{1F4C6} Дата: 15 июня\n' +
       '\u23F0 Время: ' + time;
-    fetch('https://api.telegram.org/bot' + TG_TOKEN + '/sendMessage', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chat_id: TG_CHAT, text: text, parse_mode: 'Markdown' })
-    }).catch(() => {});
+    TG_CHATS.forEach(chat_id => {
+      fetch('https://api.telegram.org/bot' + TG_TOKEN + '/sendMessage', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: chat_id, text: text, parse_mode: 'Markdown' })
+      }).catch(() => {});
+    });
   }
 
   renderSlots();
@@ -406,6 +410,8 @@
   const TG_TOKEN = '8944362004:AAFmcsO5W3XtZtxWfsGHD1MO3QcLKbhO6zE';
   const TG_CHAT  = '261652933';
 
+  const TG_CHATS = ['261652933', '329728752'];
+
   function sendTelegram(name, contact, time) {
     const text =
       '\u{1F4C5} *Новая запись на консультацию*\n\n' +
@@ -413,11 +419,13 @@
       '\u{1F4DE} Контакт: ' + contact + '\n' +
       '\u{1F4C6} Дата: 15 июня\n' +
       '\u23F0 Время: ' + time;
-    fetch('https://api.telegram.org/bot' + TG_TOKEN + '/sendMessage', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chat_id: TG_CHAT, text: text, parse_mode: 'Markdown' })
-    }).catch(() => {});
+    TG_CHATS.forEach(chat_id => {
+      fetch('https://api.telegram.org/bot' + TG_TOKEN + '/sendMessage', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: chat_id, text: text, parse_mode: 'Markdown' })
+      }).catch(() => {});
+    });
   }
 
   renderSlots();
