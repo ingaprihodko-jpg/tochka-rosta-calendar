@@ -273,7 +273,7 @@
     </div>
     <div class="success-msg" id="successMsg">
       <div class="s-icon"><i class="ti ti-circle-check"></i></div>
-      <p>Вы записаны!<br>Ждём вас на консультации.</p>
+      <p>Вы записаны!<br><br>Ждём вас на консультации 🎉<br><span style="font-size:14px;color:#888">Нажмите ✕ чтобы закрыть</span></p>
     </div>
   </div>
 </div>
@@ -358,7 +358,7 @@
     const name = document.getElementById('fieldName').value.trim();
     const contact = document.getElementById('fieldContact').value.trim();
     const btn = document.getElementById('btnSubmit');
-    const ok = name.length > 0 && contact.length > 0 && consentChecked;
+    const ok = name.length > 0 && contact.length > 0;
     btn.classList.toggle('active', ok);
     btn.style.background = ok ? '#c0144c' : '#f4b8cc';
     btn.style.color = ok ? '#fff' : '#9e5070';
@@ -368,7 +368,7 @@
   document.getElementById('btnSubmit').addEventListener('click', () => {
     const name = document.getElementById('fieldName').value.trim();
     const contact = document.getElementById('fieldContact').value.trim();
-    if (!name || !contact || !consentChecked) return;
+    if (!name || !contact) return;
 
     const slot = SLOTS.find(s => s.id === currentSlotId);
     takenSlots[currentSlotId] = { name, contact, time: slot.time.replace(/\u00a0/g, ' ') };
@@ -401,9 +401,7 @@
 
   renderSlots();
 
-    setTimeout(() => {
-      document.getElementById('overlay').classList.remove('active');
-    }, 2200);
+    // success stays until user closes
   });
 
 
