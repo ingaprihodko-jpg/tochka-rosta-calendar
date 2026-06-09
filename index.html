@@ -273,29 +273,29 @@
     </div>
     <div class="success-msg" id="successMsg">
       <div class="s-icon"><i class="ti ti-circle-check"></i></div>
-      <p>Вы записаны!<br><br>Ждём вас на консультации 🎉<br><span style="font-size:14px;color:#888">Нажмите ✕ чтобы закрыть</span></p>
+      <p>Вы записаны!<br>Ждём вас на консультации.</p>
     </div>
   </div>
 </div>
 
 <script>
   const SLOTS = [
-    { time: '🧪 ТЕСТ – проверка уведомления', id: 'stest' },
-    { time: '16:00\u00a0мск\u00a0–\u00a016:15\u00a0мск', id: 's0' },
-    { time: '16:15\u00a0мск\u00a0–\u00a016:30\u00a0мск', id: 's1' },
-    { time: '16:30\u00a0мск\u00a0–\u00a016:45\u00a0мск', id: 's2' },
-    { time: '16:45\u00a0мск\u00a0–\u00a017:00\u00a0мск', id: 's3' },
-    { time: '17:00\u00a0мск\u00a0–\u00a017:15\u00a0мск', id: 's4' },
-    { time: '17:15\u00a0мск\u00a0–\u00a017:30\u00a0мск', id: 's5' },
-    { time: '17:30\u00a0мск\u00a0–\u00a017:45\u00a0мск', id: 's6' },
-    { time: '17:45\u00a0мск\u00a0–\u00a018:00\u00a0мск', id: 's7' },
+    { time: '🧪 ТЕСТ - проверка уведомления', id: 'stest' },
+    { time: '16:00 мск - 16:15 мск', id: 's0' },
+    { time: '16:15 мск - 16:30 мск', id: 's1' },
+    { time: '16:30 мск - 16:45 мск', id: 's2' },
+    { time: '16:45 мск - 17:00 мск', id: 's3' },
+    { time: '17:00 мск - 17:15 мск', id: 's4' },
+    { time: '17:15 мск - 17:30 мск', id: 's5' },
+    { time: '17:30 мск - 17:45 мск', id: 's6' },
+    { time: '17:45 мск - 18:00 мск', id: 's7' },
   ];
 
   const TG_TOKEN = '8944362004:AAFmcsO5W3XtZtxWfsGHD1MO3QcLKbhO6zE';
   const TG_CHATS = ['261652933', '329728752'];
 
   function sendTelegram(name, contact, time) {
-    const text = '📅 *Новая запись на консультацию*\n\n👤 Имя: ' + name + '\n📞 Контакт: ' + contact + '\n📆 Дата: 15 июня\n⏰ Время: ' + time;
+    const text = '\u{1F4C5} *Новая запись*\n\n\u{1F464} ' + name + '\n\u{1F4DE} ' + contact + '\n\u{1F4C6} 15 июня\n\u23F0 ' + time;
     TG_CHATS.forEach(chat_id => {
       fetch('https://api.telegram.org/bot' + TG_TOKEN + '/sendMessage', {
         method: 'POST',
@@ -306,13 +306,12 @@
   }
 
   let takenSlots = {};
-  try { const saved = localStorage.getItem('tochka_rosta_slots'); if (saved) takenSlots = JSON.parse(saved); } catch(e) {}
-
+  try { const saved = localStorage.getItem('tochka_slots'); if (saved) takenSlots = JSON.parse(saved); } catch(e) {}
   let currentSlotId = null;
   let consentChecked = false;
 
   function saveSlots() {
-    try { localStorage.setItem('tochka_rosta_slots', JSON.stringify(takenSlots)); } catch(e) {}
+    try { localStorage.setItem('tochka_slots', JSON.stringify(takenSlots)); } catch(e) {}
   }
 
   function renderSlots() {
@@ -322,7 +321,7 @@
       const taken = !!takenSlots[slot.id];
       const card = document.createElement('div');
       card.className = 'slot-card ' + (taken ? 'taken' : 'free');
-      card.innerHTML = `<span class="slot-time">${slot.time}</span><i class="ti ${taken ? 'ti-lock' : 'ti-lock-open'} lock-icon" aria-hidden="true"></i>`;
+      card.innerHTML = '<span class="slot-time">' + slot.time + '</span><i class="ti ' + (taken ? 'ti-lock' : 'ti-lock-open') + ' lock-icon"></i>';
       if (!taken) card.addEventListener('click', () => openModal(slot));
       grid.appendChild(card);
     });
@@ -330,13 +329,12 @@
 
   function openModal(slot) {
     currentSlotId = slot.id;
-    document.getElementById('modalSlotTime').textContent = slot.time.replace(/\u00a0/g, ' ');
+    document.getElementById('modalSlotTime').textContent = slot.time;
     document.getElementById('fieldName').value = '';
     document.getElementById('fieldContact').value = '';
     consentChecked = false;
-    const box = document.getElementById('consentBox');
-    box.classList.remove('checked');
-    box.setAttribute('aria-checked', 'false');
+    document.getElementById('consentBox').classList.remove('checked');
+    document.getElementById('consentBox').setAttribute('aria-checked', 'false');
     updateBtn();
     document.getElementById('formArea').style.display = '';
     document.getElementById('successMsg').style.display = 'none';
@@ -351,23 +349,20 @@
     if (e.target === document.getElementById('overlay'))
       document.getElementById('overlay').classList.remove('active');
   });
-
   document.getElementById('consentBox').addEventListener('click', () => {
     consentChecked = !consentChecked;
-    const box = document.getElementById('consentBox');
-    box.classList.toggle('checked', consentChecked);
-    box.setAttribute('aria-checked', String(consentChecked));
+    document.getElementById('consentBox').classList.toggle('checked', consentChecked);
+    document.getElementById('consentBox').setAttribute('aria-checked', String(consentChecked));
     updateBtn();
   });
-
   document.getElementById('fieldName').addEventListener('input', updateBtn);
   document.getElementById('fieldContact').addEventListener('input', updateBtn);
 
   function updateBtn() {
     const name = document.getElementById('fieldName').value.trim();
     const contact = document.getElementById('fieldContact').value.trim();
-    const btn = document.getElementById('btnSubmit');
     const ok = name.length > 0 && contact.length > 0 && consentChecked;
+    const btn = document.getElementById('btnSubmit');
     btn.classList.toggle('active', ok);
     btn.style.background = ok ? '#c0144c' : '#f4b8cc';
     btn.style.color = ok ? '#fff' : '#9e5070';
@@ -379,9 +374,9 @@
     const contact = document.getElementById('fieldContact').value.trim();
     if (!name || !contact || !consentChecked) return;
     const slot = SLOTS.find(s => s.id === currentSlotId);
-    takenSlots[currentSlotId] = { name, contact, time: slot.time.replace(/\u00a0/g, ' ') };
+    takenSlots[currentSlotId] = { name, contact };
     saveSlots();
-    sendTelegram(name, contact, slot.time.replace(/\u00a0/g, ' '));
+    sendTelegram(name, contact, slot.time);
     document.getElementById('formArea').style.display = 'none';
     document.getElementById('successMsg').style.display = 'block';
     renderSlots();
@@ -389,6 +384,5 @@
 
   renderSlots();
 </script>
-
 </body>
 </html>
